@@ -62,7 +62,7 @@ function plugin:access(plugin_conf)
     end
 
     local new_path = path_without_prefix
-    kong.log("rewriting ", full_path, " to ", path_without_prefix)
+    kong.log.debug("rewriting ", full_path, " to ", path_without_prefix)
     if service_path ~= "" then
         kong.log("Prefixing request with service path ", service_path)
         new_path = service_path .. new_path
