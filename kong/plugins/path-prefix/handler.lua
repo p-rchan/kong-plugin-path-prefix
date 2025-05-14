@@ -1,8 +1,7 @@
-local plugin = require("kong.plugins.base_plugin"):extend()
-
-function plugin:new()
-    plugin.super.new(self, "path-prefix")
-end
+local PathPrefixHandler = {
+    VERSION = "0.1.0",
+    PRIORITY = 800
+}
 
 local function escape_hyphen(conf)
     local path_prefix = conf.path_prefix
@@ -37,10 +36,8 @@ local function get_service_for_plugin(conf)
     return kong.db.services:select({ id = conf.service_id })
 end
 
-function plugin:access(plugin_conf)
-    plugin.super.access(self)
-
-    local service, err = get_service_for_plugin(plugin_conf)
+function PathPrefixHandler:access(conf)
+    local service, err = get_service_for_plugin(conf)
 
     if err then
         kong.log.err("Unable to determine service for plugin " .. err)
@@ -54,7 +51,7 @@ function plugin:access(plugin_conf)
     local service_path = service.path or ""
 
     local full_path = kong.request.get_path()
-    local replace_match = escape_hyphen(plugin_conf)
+    local replace_match = escape_hyphen(conf)
     local path_without_prefix = full_path:gsub(replace_match, "", 1)
 
     if path_without_prefix == "" and service_path == "" then
@@ -70,6 +67,4 @@ function plugin:access(plugin_conf)
     kong.service.request.set_path(new_path)
 end
 
-plugin.PRIORITY = 800
-
-return plugin
+return PathPrefixHandler

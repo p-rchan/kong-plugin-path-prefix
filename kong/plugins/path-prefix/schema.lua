@@ -1,7 +1,17 @@
+local typedefs = require "kong.db.schema.typedefs"
+
 return {
-  no_consumer = true,
+  name = "path-prefix",
   fields = {
-    path_prefix = {type = "string", required = true, },
-    escape = {type = "boolean", default = true}
+    { consumer = typedefs.no_consumer },
+    { protocols = typedefs.protocols_http },
+    { config = {
+        type = "record",
+        fields = {
+          { path_prefix = { type = "string", required = true } },
+          { escape = { type = "boolean", default = true } },
+        },
+      },
+    },
   },
 }
